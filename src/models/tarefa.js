@@ -1,8 +1,8 @@
 const getTarefaModel = (sequelize, { DataTypes }) => {
   return sequelize.define("tarefa", {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+    objectId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
     descricao: {
@@ -10,7 +10,7 @@ const getTarefaModel = (sequelize, { DataTypes }) => {
       allowNull: false,
       validate: { notEmpty: true },
     },
-    finalizada: {
+    concluida: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS tarefas (
-  id SERIAL PRIMARY KEY,
+  "objectId" UUID PRIMARY KEY,
   descricao TEXT NOT NULL CHECK (length(trim(descricao)) > 0),
-  finalizada BOOLEAN NOT NULL DEFAULT FALSE
+  concluida BOOLEAN NOT NULL DEFAULT FALSE
 );

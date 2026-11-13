@@ -6,7 +6,7 @@ const getTarefas = async (req, res) => {
 };
 
 const getTarefa = async (req, res) => {
-  const tarefa = await tarefasService.getTarefaById(req.params.tarefaId);
+  const tarefa = await tarefasService.getTarefaById(req.params.objectId);
   if (!tarefa) throw new AppError("Tarefa não encontrada.", 404);
   return res.status(200).json(tarefa);
 };
@@ -17,13 +17,13 @@ const createTarefa = async (req, res) => {
 };
 
 const updateTarefa = async (req, res) => {
-  const tarefa = await tarefasService.updateTarefa(req.params.tarefaId, req.body);
+  const tarefa = await tarefasService.updateTarefa(req.params.objectId, req.body);
   if (!tarefa) throw new AppError("Tarefa não encontrada.", 404);
   return res.status(200).json(tarefa);
 };
 
 const deleteTarefa = async (req, res) => {
-  const deleted = await tarefasService.deleteTarefa(req.params.tarefaId);
+  const deleted = await tarefasService.deleteTarefa(req.params.objectId);
   if (!deleted) throw new AppError("Tarefa não encontrada.", 404);
   return res.status(200).json({ message: "Tarefa excluída com sucesso." });
 };

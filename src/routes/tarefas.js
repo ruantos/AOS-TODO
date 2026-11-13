@@ -6,8 +6,8 @@ const router = Router();
 
 router.get("/", tarefasController.getTarefas);
 router.post("/", validateTarefaBody, tarefasController.createTarefa);
-router.get("/:tarefaId", validateTarefaId, tarefasController.getTarefa);
-router.put("/:tarefaId", validateTarefaId, validateTarefaBody, tarefasController.updateTarefa);
-router.delete("/:tarefaId", validateTarefaId, tarefasController.deleteTarefa);
+router.get("/:objectId", validateTarefaId, tarefasController.getTarefa);
+router.put("/:objectId", validateTarefaId, validateTarefaBody, tarefasController.updateTarefa);
+router.delete("/:objectId", validateTarefaId, tarefasController.deleteTarefa);
 
 export default router;

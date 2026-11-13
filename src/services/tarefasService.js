@@ -1,20 +1,20 @@
 import models from "../models/index.js";
 
-const getAllTarefas = async () => models.Tarefa.findAll({ order: [["id", "ASC"]] });
+const getAllTarefas = async () => models.Tarefa.findAll({ order: [["objectId", "ASC"]] });
 
-const getTarefaById = async (id) => models.Tarefa.findByPk(id);
+const getTarefaById = async (objectId) => models.Tarefa.findByPk(objectId);
 
-const createTarefa = async ({ descricao, finalizada = false }) => {
-  return models.Tarefa.create({ descricao, finalizada });
+const createTarefa = async ({ descricao, concluida = false }) => {
+  return models.Tarefa.create({ descricao, concluida });
 };
 
-const updateTarefa = async (id, fields) => {
-  const tarefa = await getTarefaById(id);
+const updateTarefa = async (objectId, fields) => {
+  const tarefa = await getTarefaById(objectId);
   return tarefa ? tarefa.update(fields) : null;
 };
 
-const deleteTarefa = async (id) => {
-  const count = await models.Tarefa.destroy({ where: { id } });
+const deleteTarefa = async (objectId) => {
+  const count = await models.Tarefa.destroy({ where: { objectId } });
   return count > 0;
 };
 
