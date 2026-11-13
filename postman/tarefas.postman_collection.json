@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "API de Tarefas — UNICAP",
+    "description": "Execute na ordem para demonstrar o CRUD. O POST salva automaticamente taskId. Atualize baseUrl para a URL da Vercel, sem barra no final.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4001",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Criar tarefa",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/tarefas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tarefas"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"descricao\": \"Estudar Node.js\",\n  \"finalizada\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", function () { pm.response.to.have.status(201); });",
+              "pm.test(\"Resposta JSON\", function () { pm.response.to.be.json; });",
+              "if (pm.response.code === 201) { pm.collectionVariables.set(\"taskId\", pm.response.json().id); }"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "2. Listar tarefas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/tarefas",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tarefas"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Resposta JSON\", function () { pm.response.to.be.json; });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "3. Buscar tarefa por ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/tarefas/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tarefas",
+            "{{taskId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Resposta JSON\", function () { pm.response.to.be.json; });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "4. Atualizar tarefa",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/tarefas/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tarefas",
+            "{{taskId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"descricao\": \"Estudar Express.js\",\n  \"finalizada\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Resposta JSON\", function () { pm.response.to.be.json; });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "5. Excluir tarefa",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/tarefas/{{taskId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tarefas",
+            "{{taskId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Resposta JSON\", function () { pm.response.to.be.json; });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    }
+  ]
+}
