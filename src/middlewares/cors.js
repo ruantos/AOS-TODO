@@ -8,7 +8,6 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 const corsOptionsDelegate = (req, callback) => {
   const origin = req.headers.origin;
 
-  // Permite requisições sem 'Origin' (Expo/React Native nativo, mobile, cURL, Postman)
   if (!origin) {
     return callback(null, { origin: true, credentials: true });
   }

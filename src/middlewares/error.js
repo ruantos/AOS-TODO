@@ -1,55 +1,34 @@
 import { AppError } from "../utils/index.js";
 
 const errorMiddleware = (err, req, res, next) => {
-  const isDev = process.env.NODE_ENV !== "production";
-
-  if (isDev) {
-    console.error(err.stack);
-  } else {
-    console.error(`${err.name || "Error"}: ${err.message}`);
-  }
+  if (res.headersSent) return next(err);
 
   if (err instanceof AppError) {
-    return res.status(err.statusCode).send({
-      status: err.status,
-      message: err.message,
-      ...(isDev && { stack: err.stack }),
-    });
+    return res.status(err.statusCode).json({ status: err.status, message: err.message });
+  }
+
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ status: "fail", message: "O corpo da requisição contém JSON inválido." });
+  }
+
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({ status: "fail", message: "O corpo da requisição excede o tamanho permitido." });
   }
 
   if (err.name === "SequelizeUniqueConstraintError") {
-    return res.status(409).send({
-      status: "fail",
-      message: err.errors?.length
-        ? err.errors.map((e) => e.message).join(", ")
-        : "Registro duplicado.",
-      ...(isDev && { stack: err.stack }),
-    });
+    return res.status(409).json({ status: "fail", message: "Registro duplicado." });
   }
 
   if (err.name === "SequelizeValidationError") {
-    return res.status(400).send({
-      status: "fail",
-      message: err.errors?.length
-        ? err.errors.map((e) => e.message).join(", ")
-        : err.message,
-      ...(isDev && { stack: err.stack }),
-    });
+    return res.status(400).json({ status: "fail", message: "Dados inválidos. Verifique os campos informados." });
   }
 
   if (err.name === "SequelizeDatabaseError" && err.original?.code === "22P02") {
-    return res.status(400).send({
-      status: "fail",
-      message: "Identificador (ID) fornecido possui formato inválido.",
-      ...(isDev && { stack: err.stack }),
-    });
+    return res.status(400).json({ status: "fail", message: "Identificador (ID) fornecido possui formato inválido." });
   }
 
-  return res.status(500).send({
-    status: "error",
-    message: isDev ? err.message : "Algo deu errado no servidor.",
-    ...(isDev && { stack: err.stack }),
-  });
+  console.error("Erro interno ao processar a requisição.");
+  return res.status(500).json({ status: "error", message: "Algo deu errado no servidor." });
 };
 
 export default errorMiddleware;

@@ -1,99 +1,26 @@
-import "dotenv/config";
-import express from "express";
-import helmet from "helmet";
-import models, { sequelize } from "./models/index.js";
-import {
-  corsMiddleware,
-  logMiddleware,
-  contextMiddleware,
-  notFoundMiddleware,
-  errorMiddleware,
-  limiterMiddleware,
-} from "./middlewares/index.js";
-import * as routes from "./routes/index.js";
+import app from "./app.js";
+import { sequelize } from "./models/index.js";
 
-const app = express();
-
-app.set("trust proxy", 1);
-
-// middlewares
-app.use(helmet());
-app.use(corsMiddleware);
-app.use(limiterMiddleware);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(logMiddleware);
-
-// rotas
-app.get("/", (req, res) => {
-  return res.json({ message: "Servidor express executando..." });
-});
-app.use("/tarefas", routes.tarefas);
-app.use(["/session", "/users", "/messages"], contextMiddleware);
-app.use("/session", routes.session);
-app.use("/users", routes.user);
-app.use("/messages", routes.message);
-
-// rota não encontrada (404)
-app.use(notFoundMiddleware);
-
-// middleware global de erro
-app.use(errorMiddleware);
-
-const port = process.env.PORT || 3000;
-
-const eraseDatabaseOnSync = process.env.ERASE_DATABASE_ON_SYNC === "true";
-const syncDatabase =
-  process.env.SYNC_DATABASE === "true" || eraseDatabaseOnSync;
-
-const startServer = () => {
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-};
-
-if (syncDatabase) {
-  sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
-    if (eraseDatabaseOnSync) {
-      await createUsersWithMessages();
+const startServer = async () => {
+  try {
+    if (process.env.ERASE_DATABASE_ON_SYNC === "true") {
+      throw new Error("A recriação destrutiva do banco está desabilitada.");
     }
-    startServer();
-  });
-} else {
-  startServer();
-}
-
-const createUsersWithMessages = async () => {
-  await models.User.create(
-    {
-      username: "rwieruch",
-      email: "rwieruch@email.com",
-      messages: [
-        {
-          text: "Published the Road to learn React",
-        },
-      ],
-    },
-    {
-      include: [models.Message],
-    },
-  );
-
-  await models.User.create(
-    {
-      username: "ddavids",
-      email: "ddavids@email.com",
-      messages: [
-        {
-          text: "Happy to release ...",
-        },
-        {
-          text: "Published a complete ...",
-        },
-      ],
-    },
-    {
-      include: [models.Message],
-    },
-  );
+    await sequelize.authenticate();
+    if (process.env.SYNC_DATABASE === "true") {
+      await sequelize.sync();
+    }
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => console.log(`Servidor executando na porta ${port}.`));
+  } catch {
+    console.error("Não foi possível iniciar o servidor. Verifique a configuração e a conexão com o banco.");
+    await sequelize.close();
+    process.exitCode = 1;
+  }
 };
+
+if (!process.env.VERCEL) {
+  await startServer();
+}
 
 export default app;
