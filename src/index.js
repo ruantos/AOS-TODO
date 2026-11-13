@@ -23,12 +23,13 @@ app.use(limiterMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logMiddleware);
-app.use(contextMiddleware);
 
 // rotas
 app.get("/", (req, res) => {
-  return res.send("Servidor express executando...");
+  return res.json({ message: "Servidor express executando..." });
 });
+app.use("/tarefas", routes.tarefas);
+app.use(["/session", "/users", "/messages"], contextMiddleware);
 app.use("/session", routes.session);
 app.use("/users", routes.user);
 app.use("/messages", routes.message);
